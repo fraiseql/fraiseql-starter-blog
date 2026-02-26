@@ -178,13 +178,13 @@ $$ LANGUAGE plpgsql;
 INSERT INTO tb_author (name, email, bio) VALUES
     ('Alice Martin', 'alice@example.com', 'Tech writer and open-source enthusiast.'),
     ('Bob Chen',     'bob@example.com',   'Backend engineer, database nerd.')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (email) DO NOTHING;
 
 INSERT INTO tb_tag (identifier, label) VALUES
     ('graphql',    'GraphQL'),
     ('postgresql', 'PostgreSQL'),
     ('tutorial',   'Tutorial')
-ON CONFLICT DO NOTHING;
+ON CONFLICT (identifier) DO NOTHING;
 
 INSERT INTO tb_post (title, identifier, content, author_id, published, published_at) VALUES
     (
@@ -199,4 +199,4 @@ INSERT INTO tb_post (title, identifier, content, author_id, published, published
         'Using views to expose your data model to FraiseQL is straightforward...',
         2, true, now() - interval '7 days'
     )
-ON CONFLICT DO NOTHING;
+ON CONFLICT (identifier) DO NOTHING;

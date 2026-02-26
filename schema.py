@@ -92,7 +92,7 @@ def search_posts(query: str, limit: int = 10, offset: int = 0) -> list[Post]:
 
 @fraiseql.query(
     sql_source="v_author",
-    auto_params={"limit": True, "offset": True},
+    auto_params={"limit": True, "offset": True, "where": True, "order_by": True},
 )
 def authors(limit: int = 20, offset: int = 0) -> list[Author]:
     """List all authors."""
@@ -105,7 +105,10 @@ def author(id: int) -> Author | None:
     pass
 
 
-@fraiseql.query(sql_source="v_tag")
+@fraiseql.query(
+    sql_source="v_tag",
+    auto_params={"where": True, "order_by": True},
+)
 def tags() -> list[Tag]:
     """List all tags."""
     pass
