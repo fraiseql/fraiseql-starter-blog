@@ -1,7 +1,7 @@
 # fraiseql/starter-blog
 
 [![CI](https://github.com/fraiseql/fraiseql-starter-blog/actions/workflows/ci.yml/badge.svg)](https://github.com/fraiseql/fraiseql-starter-blog/actions/workflows/ci.yml)
-[![Docker](https://ghcr.io/fraiseql/fraiseql-starter-blog)](https://github.com/fraiseql/fraiseql-starter-blog/pkgs/container/fraiseql-starter-blog)
+[![Docker](https://ghcr-badge.egpl.dev/fraiseql/fraiseql-starter-blog/latest_tag?label=ghcr.io)](https://github.com/fraiseql/fraiseql-starter-blog/pkgs/container/fraiseql-starter-blog)
 
 A blog API built with FraiseQL: **posts, authors, tags, pagination, full-text search**.
 
@@ -13,6 +13,7 @@ A blog API built with FraiseQL: **posts, authors, tags, pagination, full-text se
 | `fraiseql.toml` | Project and runtime configuration |
 | `init.sql` | PostgreSQL tables, views, functions, and seed data |
 | `docker-compose.yml` | One-command local stack |
+| `Dockerfile` | Multi-stage image for self-hosting |
 | `.env.example` | Environment variable template |
 
 ## GraphQL API surface
