@@ -30,7 +30,7 @@ class Tag:
     """A content tag."""
 
     id: int
-    slug: str
+    identifier: str
     label: str
 
 
@@ -40,7 +40,7 @@ class Post:
 
     id: int
     title: str
-    slug: str
+    identifier: str
     excerpt: str | None
     content: str
     author_id: int
@@ -63,7 +63,7 @@ def posts(
     offset: int = 0,
     published: bool = True,
     author_id: int | None = None,
-    tag_slug: str | None = None,
+    tag_identifier: str | None = None,
 ) -> list[Post]:
     """List posts with pagination and filtering."""
     pass
@@ -76,8 +76,8 @@ def post(id: int) -> Post | None:
 
 
 @fraiseql.query(sql_source="v_post")
-def post_by_slug(slug: str) -> Post | None:
-    """Get a single post by slug."""
+def post_by_identifier(identifier: str) -> Post | None:
+    """Get a single post by identifier."""
     pass
 
 
@@ -138,7 +138,7 @@ def update_post(
 
 
 @fraiseql.mutation(sql_source="fn_add_tag_to_post", operation="CREATE")
-def add_tag_to_post(post_id: int, tag_slug: str) -> Post:
+def add_tag_to_post(post_id: int, tag_identifier: str) -> Post:
     """Add a tag to a post (creates tag if needed)."""
     pass
 

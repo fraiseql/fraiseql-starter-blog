@@ -1,5 +1,8 @@
 # fraiseql/starter-blog
 
+[![CI](https://github.com/fraiseql/fraiseql-starter-blog/actions/workflows/ci.yml/badge.svg)](https://github.com/fraiseql/fraiseql-starter-blog/actions/workflows/ci.yml)
+[![Docker](https://ghcr.io/fraiseql/fraiseql-starter-blog)](https://github.com/fraiseql/fraiseql-starter-blog/pkgs/container/fraiseql-starter-blog)
+
 A blog API built with FraiseQL: **posts, authors, tags, pagination, full-text search**.
 
 ## What's inside
@@ -16,13 +19,13 @@ A blog API built with FraiseQL: **posts, authors, tags, pagination, full-text se
 
 ```graphql
 type Author { id, name, email, bio, avatarUrl, createdAt }
-type Tag    { id, slug, label }
-type Post   { id, title, slug, excerpt, content, author, tags, published, ... }
+type Tag    { id, identifier, label }
+type Post   { id, title, identifier, excerpt, content, author, tags, published, ... }
 
 type Query {
-  posts(limit, offset, published, authorId, tagSlug): [Post!]!
+  posts(limit, offset, published, authorId, tagIdentifier): [Post!]!
   post(id): Post
-  postBySlug(slug): Post
+  postByIdentifier(identifier): Post
   searchPosts(query, limit, offset): [Post!]!
   authors(limit, offset): [Author!]!
   author(id): Author
@@ -32,7 +35,7 @@ type Query {
 type Mutation {
   createPost(title, content, authorId, excerpt, published): Post!
   updatePost(id, title, content, excerpt, published): Post!
-  addTagToPost(postId, tagSlug): Post!
+  addTagToPost(postId, tagIdentifier): Post!
 }
 ```
 
@@ -47,6 +50,8 @@ fraiseql compile
 
 docker compose up
 ```
+
+> **Note**: `fraiseql compile` requires FraiseQL v2 (coming soon).
 
 API at **http://localhost:8080/graphql**.
 
@@ -65,9 +70,9 @@ python schema.py && fraiseql compile && fraiseql run
 query {
   posts(limit: 5, published: true) {
     title
-    slug
+    identifier
     author { name }
-    tags { slug label }
+    tags { identifier label }
   }
 }
 
@@ -79,6 +84,15 @@ query {
   }
 }
 
+# Get a post by identifier
+query {
+  postByIdentifier(identifier: "getting-started-with-fraiseql") {
+    title
+    content
+    author { name }
+  }
+}
+
 # Create a post
 mutation {
   createPost(
@@ -87,14 +101,14 @@ mutation {
     authorId: 1
     published: true
   ) {
-    id slug publishedAt
+    id identifier publishedAt
   }
 }
 ```
 
 ## How full-text search works
 
-`init.sql` adds a generated `tsvector` column (`search_tsv`) to the `posts` table, indexed with GIN. The `v_post_search` view exposes this. FraiseQL routes `searchPosts(query: "...")` to a `WHERE search_tsv @@ plainto_tsquery(...)` clause automatically.
+`init.sql` adds a generated `tsvector` column (`search_tsv`) to the `tb_post` table, indexed with GIN. The `v_post_search` view exposes this. FraiseQL routes `searchPosts(query: "...")` to a `WHERE search_tsv @@ plainto_tsquery(...)` clause automatically.
 
 ## Next steps
 
