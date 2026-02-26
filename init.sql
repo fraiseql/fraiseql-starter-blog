@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS tb_post_tag (
     CONSTRAINT fk_post_tag_tag_id  FOREIGN KEY (tag_id)  REFERENCES tb_tag(id)  ON DELETE CASCADE
 );
 
-CREATE INDEX IF NOT EXISTS tb_post_search_idx ON tb_post USING GIN(search_tsv);
+CREATE INDEX IF NOT EXISTS tb_post_search_idx  ON tb_post     USING GIN(search_tsv);
+CREATE INDEX IF NOT EXISTS tb_post_tag_tag_idx ON tb_post_tag(tag_id);
 
 -- ── Views ─────────────────────────────────────────────────────────────────────
 
@@ -95,6 +96,7 @@ SELECT
     p.content,
     p.author_id,
     row_to_json(a)::jsonb AS author,
+    -- tags intentionally omitted from search results (avoids GROUP BY; fetch via post(id))
     '[]'::jsonb           AS tags,
     p.published,
     p.published_at::TEXT  AS published_at,
@@ -118,7 +120,7 @@ DECLARE
     v_identifier TEXT;
     v_id         INTEGER;
 BEGIN
-    v_identifier := lower(regexp_replace(p_title, '[^a-zA-Z0-9]+', '-', 'g'));
+    v_identifier := trim('-' FROM lower(regexp_replace(p_title, '[^a-zA-Z0-9]+', '-', 'g')));
     INSERT INTO tb_post (title, identifier, content, author_id, excerpt, published, published_at)
     VALUES (
         p_title, v_identifier, p_content, p_author_id, p_excerpt,
@@ -166,8 +168,10 @@ BEGIN
 
     SELECT id INTO v_tag_id FROM tb_tag WHERE identifier = p_tag_identifier;
 
+    -- Tag label is derived from identifier on first creation only.
+    -- If the tag already exists, the existing label is kept unchanged.
     INSERT INTO tb_post_tag (post_id, tag_id) VALUES (p_post_id, v_tag_id)
-    ON CONFLICT DO NOTHING;
+    ON CONFLICT (post_id, tag_id) DO NOTHING;
 
     RETURN QUERY SELECT * FROM v_post WHERE id = p_post_id;
 END;

@@ -111,6 +111,26 @@ mutation {
 
 `init.sql` adds a generated `tsvector` column (`search_tsv`) to the `tb_post` table, indexed with GIN. The `v_post_search` view exposes this. FraiseQL routes `searchPosts(query: "...")` to a `WHERE search_tsv @@ plainto_tsquery(...)` clause automatically.
 
+Search results do not include `tags` (always `[]`) to avoid the GROUP BY aggregation
+cost. Fetch the full post via `post(id)` when tags are needed.
+
+> Use `post(id)` when you have an integer ID from a list result.
+> Use `postByIdentifier(identifier)` for permalink routes (e.g. `/posts/my-slug`).
+
+## Running tests
+
+```bash
+# Start only the database
+docker compose up postgres -d
+
+# Apply schema and run tests
+PGPASSWORD=postgres psql -h localhost -U postgres -d blog -f init.sql
+bash tests/test-postgres.sh
+```
+
+> **Note**: `fraiseql compile` requires FraiseQL v2 (coming soon). Skip this step
+> if running FraiseQL v1.
+
 ## Next steps
 
 - `starter-saas` — multi-tenant, auth, subscriptions, NATS

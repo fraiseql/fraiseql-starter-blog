@@ -97,16 +97,10 @@ echo "── fn_update_post ─────────────────�
 updated_title=$($PSQL -tAc \
     "SELECT title FROM fn_update_post($new_id, p_title := 'CI Test Post Updated') LIMIT 1")
 updated_title=$(echo "$updated_title" | tr -d '[:space:]')
-if [ "$updated_title" = "CITestPostUpdated" ] || echo "$updated_title" | grep -qi "updated"; then
-    pass "fn_update_post title updated"
+if [ "$updated_title" = "CITestPostUpdated" ]; then
+    pass "fn_update_post title updated correctly"
 else
-    # Check via view
-    view_title=$($PSQL -tAc "SELECT title FROM v_post WHERE id = $new_id")
-    if echo "$view_title" | grep -qi "Updated"; then
-        pass "fn_update_post title updated (verified via v_post)"
-    else
-        fail "fn_update_post: expected updated title, got: $updated_title"
-    fi
+    fail "fn_update_post: expected 'CITestPostUpdated', got: '$updated_title'"
 fi
 
 echo "── Full-text search ────────────────────────────────────────────────────"
@@ -114,9 +108,9 @@ check_count "v_post_search FTS for 'FraiseQL'" \
     "SELECT COUNT(*) FROM v_post_search WHERE search_tsv @@ plainto_tsquery('english', 'FraiseQL')" 1
 
 echo "── Cleanup ─────────────────────────────────────────────────────────────"
-$PSQL -c "DELETE FROM tb_post WHERE identifier LIKE 'ci-test%'"
-$PSQL -c "DELETE FROM tb_post WHERE id = $new_id" 2>/dev/null || true
-$PSQL -c "DELETE FROM tb_tag WHERE identifier = 'ci-test'"
+$PSQL -c "DELETE FROM tb_post_tag WHERE post_id = $new_id"
+$PSQL -c "DELETE FROM tb_post     WHERE id = $new_id"
+$PSQL -c "DELETE FROM tb_tag      WHERE identifier = 'ci-test'"
 pass "cleanup done"
 
 echo ""

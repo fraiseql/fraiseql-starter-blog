@@ -80,7 +80,11 @@ def post_by_identifier(identifier: str) -> Post | None:
 
 @fraiseql.query(sql_source="v_post_search")
 def search_posts(query: str, limit: int = 10, offset: int = 0) -> list[Post]:
-    """Full-text search across post titles and content."""
+    """Full-text search across post titles and content.
+
+    Note: tags are not populated in search results for performance. Fetch the
+    full post via post(id) if tags are needed.
+    """
     pass
 
 
