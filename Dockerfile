@@ -1,14 +1,9 @@
-ARG FRAISEQL_V2=false
-
-FROM ghcr.io/fraiseql/fraiseql:latest AS builder
-ARG FRAISEQL_V2
+FROM ghcr.io/fraiseql/fraiseql:v2.0.0 AS builder
 WORKDIR /build
 COPY schema.py fraiseql.toml ./
-RUN if [ "$FRAISEQL_V2" = "true" ]; then \
-      python schema.py && fraiseql compile; \
-    else touch schema.compiled.json; fi
+RUN python schema.py && fraiseql compile
 
-FROM ghcr.io/fraiseql/fraiseql:latest AS runtime
+FROM ghcr.io/fraiseql/fraiseql:v2.0.0 AS runtime
 WORKDIR /app
 COPY fraiseql.toml ./
 COPY --from=builder /build/schema.compiled.json ./schema.compiled.json
