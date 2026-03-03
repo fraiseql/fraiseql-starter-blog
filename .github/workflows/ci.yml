@@ -94,11 +94,10 @@ jobs:
           PGPASSWORD: postgres
         run: bash tests/test-postgres.sh
 
-  # ── Job 3: Full-stack (gated — activate when FraiseQL v2 ships) ────────────
+  # ── Job 3: Full-stack ─────────────────────────────────────────────────────
   full-stack:
-    name: Full-stack (FraiseQL v2)
+    name: Full-stack
     runs-on: ubuntu-latest
-    if: vars.FRAISEQL_V2_AVAILABLE == 'true'
     steps:
       - uses: actions/checkout@v4
 

@@ -7,11 +7,6 @@ on:
         description: Image version tag (e.g. 1.0.0)
         required: true
         type: string
-      fraiseql_v2:
-        description: Compile schema with FraiseQL v2
-        required: false
-        type: boolean
-        default: false
   release:
     types: [published]
 
@@ -45,10 +40,8 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "release" ]; then
             echo "tag=${{ github.event.release.tag_name }}" >> "$GITHUB_OUTPUT"
-            echo "v2=false" >> "$GITHUB_OUTPUT"
           else
             echo "tag=${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-            echo "v2=${{ inputs.fraiseql_v2 }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Extract metadata
@@ -67,7 +60,5 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            FRAISEQL_V2=${{ steps.version.outputs.v2 }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
